@@ -11,6 +11,7 @@ public class InvoiceGenerator {
         return distance * MINIMUM_COST_PER_KILOMETER + time * COST_PER_TIME;
 
 
+
     }
 
 
