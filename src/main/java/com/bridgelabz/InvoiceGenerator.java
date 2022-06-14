@@ -1,25 +1,35 @@
 package com.bridgelabz;
 
-import static java.sql.Types.TIME;
+import java.util.HashMap;
+import java.util.Map;
 
-public class InvoiceGenerator<Ride> {
-    private static final double MINIMUM_COST_PER_KILOMETER = 10.0;
-    private static final int COST_PER_TIME = 1;
+public class InvoiceGenerator {
+    private static final double MINIMUM_COST_PER_KILOMETER = 10;
+    private static final int COST_PER_MINUTE = 1;
+    private static final double MINIMUM_FARE = 5;
 
+    Map<String, Ride[]> map = new HashMap<>();
 
-    public static double calculateFare(double distance, int time) {
-        return distance * MINIMUM_COST_PER_KILOMETER + time * COST_PER_TIME;
-
-
-
+    public double calculateFare(double distance, int time) {
+        double totalFare = distance * MINIMUM_COST_PER_KILOMETER + time * COST_PER_MINUTE;
+        return Math.max(totalFare, MINIMUM_FARE);
     }
-    public double calculateFare(Ride[] rides) {
+
+    public InvoiceSummary calculateFare(Ride[] rides) {
         double totalFare = 0;
-        for (Ride ride:rides) {
+        for (Ride ride : rides) {
             totalFare += this.calculateFare(ride.distance, ride.time);
         }
-        return totalFare;
+        return new InvoiceSummary(rides.length, totalFare);
     }
 
+    public void addRides(String userId, Ride[] rides) {
+        map.put(userId, rides);
+    }
 
+    public InvoiceSummary getInvoiceService(String userId) {
+        Ride[] ride = map.get(userId);
+        InvoiceSummary invoiceSummary = new InvoiceGenerator().calculateFare(ride);
+        return invoiceSummary;
+    }
 }
